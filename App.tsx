@@ -15,25 +15,21 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
-import StudentList from './componnents/StudentsList';
 import StudentDetails from './componnents/StudentDetails';
-import StudentAdd from './componnents/StudentAdd';
 import { LoginScreen } from './screens/LoginScreen';
 import PostAdd from './componnents/PostAdd';
 import PostsList from './componnents/PostsList';
-import { clearStorage, getFromStorage } from './services/asyncStoraage.service';
 import UserModel, { User } from './model/UserModel';
 import { InfoScreen } from './screens/InfoScreen';
 
-
 const StudentStack = createNativeStackNavigator();
-const StudentStackCp: FC<{ route: any; navigation: any }> = ({
+const StudentStackCp: FC<{ route: any; navigation: any; user: User }> = ({
   route,
   navigation,
+  user,
 }) => {
   const addNewStudents = () => {
-    navigation.navigate('PostAdd');
+    route.navigation.navigate('PostAdd');
   };
   return (
     <StudentStack.Navigator>
@@ -49,17 +45,19 @@ const StudentStackCp: FC<{ route: any; navigation: any }> = ({
         }}
       />
       <StudentStack.Screen name='StudentDetails' component={StudentDetails} />
-      <StudentStack.Screen name='PostAdd' component={PostAdd} />
+      <StudentStack.Screen name='PostAdd' component={()=> <PostAdd 
+      navigation={navigation}
+      route={route}
+      user={user}></PostAdd>}    />
     </StudentStack.Navigator>
   );
 };
 
 const Tab = createBottomTabNavigator();
 const App: FC = () => {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User|null>();
 
   useEffect(() => {
-
     loadUser();
   }, []);
 
@@ -67,7 +65,7 @@ const App: FC = () => {
     const res: any = await UserModel.getUserInfo();
     console.log('init', res.data);
     if (res.data.err) {
-      setUser(null)
+      setUser(null);
     } else {
       setUser(res.data);
     }
@@ -84,7 +82,7 @@ const App: FC = () => {
                 : 'information-circle-outline';
             } else if (route.name === 'StudentStackCp') {
               iconName = focused ? 'list-circle' : 'list-circle-outline';
-            }else if(route.name==='LoginScreen'){
+            } else if (route.name === 'LoginScreen') {
               iconName = focused ? 'home' : 'home-outline';
             }
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -96,7 +94,15 @@ const App: FC = () => {
         {user && (
           <Tab.Screen
             name='StudentStackCp'
-            component={StudentStackCp}
+            component={(route: any, navigation: any) => {
+           return   (
+                <StudentStackCp
+                  navigation={navigation}
+                  route={route}
+                  user={user}
+                />
+              )
+            }}
             options={{ headerShown: false }}
           />
         )}
@@ -109,7 +115,6 @@ const App: FC = () => {
                 route={route}
                 user={user}
                 loadUser={loadUser}
-
               ></InfoScreen>
             )}
           />

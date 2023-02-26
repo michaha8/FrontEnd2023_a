@@ -4,12 +4,13 @@ export interface Post {
   userId: string;
   message: string;
   image?: string;
+  userImage?: string;
 }
 
 const addPost = async (post: Post) => {
   console.log('addPost');
   try {
-    const res:any = PostApi.addPost(post);
+    const res: any = PostApi.addPost(post);
     console.log(res.data);
   } catch (err) {
     console.log('add post fail: ' + err);
@@ -28,7 +29,8 @@ const getAllPosts = async () => {
         userId: obj.sender,
         id: obj._id,
         message: obj.message,
-        image: obj.avatarUrl,
+        image: obj?.image || '',
+        userImage: obj?.userImage || '',
       };
       data.push(st);
     });
