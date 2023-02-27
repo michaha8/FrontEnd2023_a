@@ -70,13 +70,14 @@ const PostAdd: FC<{ route: any; navigation: any; user: User }> = ({
       message,
       userId: user?.id || '',
       image: 'url',
+
     };
     try {
       if (postUri != '') {
         console.log('uploading image');
-        const url = await StudentModel.uploadImage(postUri);
-        post.image = url;
-        console.log('got url from upload: ' + url);
+        // const url = await StudentModel.uploadImage(postUri);
+        post.image = postUri;
+        console.log('got url from upload: ' + postUri);
       }
       console.log('saving post');
       await PostModel.addPost(post);

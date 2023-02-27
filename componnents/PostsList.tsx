@@ -64,6 +64,8 @@ const PostsList: FC<{ route: any; navigation: any }> = ({
       let posts: Post[] = [];
       try {
         posts = await PostModel.getAllPosts();
+        console.log({posts});
+        
         console.log('fetching posts complete', posts);
       } catch (err) {
         console.log('fail fetching posts ' + err);

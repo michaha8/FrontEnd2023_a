@@ -3,7 +3,7 @@ export interface Post {
   id: string;
   userId: string;
   message: string;
-  username: string;
+  username?: string;
   image?: string;
   userImage?: string;
 }
