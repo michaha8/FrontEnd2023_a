@@ -29,7 +29,7 @@ export const LoginScreen: FC<{
     name: '',
     image: '',
   });
-
+  const [msg, setMsg] = useState('');
   //   GoogleSignin.configure({
   //     webClientId:
   //       '710942905986-qaehumf27ft2m1ipg7s1tvtnbvmq9osg.apps.googleusercontent.com',
@@ -39,19 +39,34 @@ export const LoginScreen: FC<{
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const handleSubmit = async () => {
     if (mode === 'login') {
+      if (!user.email || !user.password) {
+        setMsg('Must fill Both Fields');
+        return;
+      }
       const res = await UserModel.login(user);
       console.log('inside login', { res });
-      if (res) {
+      if (res?.err) {
+        setMsg(res.err);
+      } else {
+        setMsg('');
         const { accessToken, refreshToken } = res;
         await saveToStorage('accessToken', accessToken);
         await saveToStorage('refreshToken', refreshToken);
         loadUser();
       }
     } else {
+      if (!user.email || !user.password || !user.name) {
+        setMsg('Must fill All Fields');
+        return;
+      }
       const res: any = await UserModel.register(user);
       console.log('inside register', res.data);
       if (!res?.data?.err) {
         setMode('login');
+        setMsg('');
+      }else{
+        setMsg(res?.data?.err);
+
       }
       resetForm();
     }
@@ -63,6 +78,7 @@ export const LoginScreen: FC<{
 
   useEffect(() => {
     resetForm();
+    setMsg('');
   }, [mode]);
 
   const openCamera = async () => {
@@ -91,7 +107,7 @@ export const LoginScreen: FC<{
   return (
     <View style={styles.container}>
       <View style={{ width: '80%', alignSelf: 'center' }}>
-      {mode === 'register' && (
+        {mode === 'register' && (
           <View>
             {!user.image && (
               <Image
@@ -124,13 +140,14 @@ export const LoginScreen: FC<{
           style={styles.input}
           onChangeText={(email: string) => setUser({ ...user, email })}
         />
-     
+
         <TextInput
           style={styles.input}
           value={user.password}
           placeholder='Enter Password'
           onChangeText={(password: string) => setUser({ ...user, password })}
         />
+        {msg && <Text style={styles.err}>{msg} </Text>}
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>{mode}</Text>
         </TouchableOpacity>
@@ -164,6 +181,11 @@ export const LoginScreen: FC<{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  err: {
+    color: 'red',
+    fontSize: 14,
+    marginHorizontal: 12,
   },
   avatar: {
     height: 250,

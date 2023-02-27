@@ -3,6 +3,7 @@ export interface Post {
   id: string;
   userId: string;
   message: string;
+  username: string;
   image?: string;
   userImage?: string;
 }
@@ -18,7 +19,7 @@ const addPost = async (post: Post) => {
 };
 
 const getAllPosts = async () => {
-  console.log('getall posts()');
+  console.log('getall posts()');1
   const res: any = await PostApi.getAllPosts();
   console.log({ res });
   let data = Array<Post>();
@@ -31,6 +32,7 @@ const getAllPosts = async () => {
         message: obj.message,
         image: obj?.image || '',
         userImage: obj?.userImage || '',
+        username: obj?.username || '',
       };
       data.push(st);
     });

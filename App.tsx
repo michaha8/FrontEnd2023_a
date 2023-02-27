@@ -21,6 +21,7 @@ import PostAdd from './componnents/PostAdd';
 import PostsList from './componnents/PostsList';
 import UserModel, { User } from './model/UserModel';
 import { InfoScreen } from './screens/InfoScreen';
+import PostDetails from './componnents/PostDetails';
 
 const StudentStack = createNativeStackNavigator();
 const StudentStackCp: FC<{ route: any; navigation: any; user: User }> = ({
@@ -44,18 +45,20 @@ const StudentStackCp: FC<{ route: any; navigation: any; user: User }> = ({
           ),
         }}
       />
-      <StudentStack.Screen name='StudentDetails' component={StudentDetails} />
-      <StudentStack.Screen name='PostAdd' component={()=> <PostAdd 
-      navigation={navigation}
-      route={route}
-      user={user}></PostAdd>}    />
+      <StudentStack.Screen name='PostDetails' component={PostDetails} />
+      <StudentStack.Screen
+        name='PostAdd'
+        component={() => (
+          <PostAdd navigation={navigation} route={route} user={user}></PostAdd>
+        )}
+      />
     </StudentStack.Navigator>
   );
 };
 
 const Tab = createBottomTabNavigator();
 const App: FC = () => {
-  const [user, setUser] = useState<User|null>();
+  const [user, setUser] = useState<User | null>();
 
   useEffect(() => {
     loadUser();
@@ -95,13 +98,13 @@ const App: FC = () => {
           <Tab.Screen
             name='StudentStackCp'
             component={(route: any, navigation: any) => {
-           return   (
+              return (
                 <StudentStackCp
                   navigation={navigation}
                   route={route}
                   user={user}
                 />
-              )
+              );
             }}
             options={{ headerShown: false }}
           />

@@ -15,8 +15,9 @@ const ListItem: FC<{
   id: String;
   image: String;
   userImage: string;
+  username: string;
   onRowSelected: (id: String) => void;
-}> = ({ message, id, image, onRowSelected, userImage }) => {
+}> = ({ message, id, image, onRowSelected, userImage, username }) => {
   const onClick = () => {
     console.log('int he row: row was selected ' + image);
     onRowSelected(id);
@@ -37,15 +38,9 @@ const ListItem: FC<{
             source={{ uri: userImage.toString() }}
           />
         )}
-
-        <View style={styles.listRowTextContainer}>
-          <Text style={styles.listRowName}>{message}</Text>
-          {image && (
-            <Image
-              style={styles.smallImage}
-              source={{ uri: image.toString() }}
-            />
-          )}
+        <View style={{ flexDirection: 'column' }}>
+          <Text style={styles.listRowName}>User Name:{username}</Text>
+          <Text style={styles.listRowName}>message:{message}</Text>
         </View>
       </View>
     </TouchableHighlight>
@@ -56,9 +51,9 @@ const PostsList: FC<{ route: any; navigation: any }> = ({
   route,
   navigation,
 }) => {
-  const onRowSelected = (id: String) => {
-    console.log('in the list: row was selected ' + id);
-    navigation.navigate('StudentDetails', { studentId: id });
+  const onRowSelected = (item: Post) => {
+    console.log('in the list: row was selected ' + item);
+    navigation.navigate('PostDetails', { post: item });
   };
 
   const [posts, setPosts] = useState<Array<Post>>();
@@ -90,7 +85,8 @@ const PostsList: FC<{ route: any; navigation: any }> = ({
           message={item.message}
           image={item.image || ''}
           userImage={item.userImage || ''}
-          onRowSelected={onRowSelected}
+          username={item.username || ''}
+          onRowSelected={() => onRowSelected(item)}
         />
       )}
     ></FlatList>
@@ -119,18 +115,18 @@ const styles = StyleSheet.create({
     height: 130,
     width: 130,
   },
-  smallImage:{
+  smallImage: {
     height: 100,
     width: 100,
   },
   listRowTextContainer: {
     flex: 1,
-    flexDirection:'row',
-alignItems:'center',
+    flexDirection: 'row',
+    alignItems: 'center',
     margin: 10,
   },
   listRowName: {
-    fontSize: 30,
+    fontSize: 20,
   },
   listRowId: {
     fontSize: 25,
